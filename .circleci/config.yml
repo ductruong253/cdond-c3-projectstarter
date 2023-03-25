@@ -127,7 +127,7 @@ jobs:
       - checkout
       - run:
           name: Install required dependencies
-          command: yum install -y tar gzip
+          command: yum install -y tar gzip unzip
       - run:
           name: Ensure back-end infrastructure exists
           command: |
@@ -178,7 +178,7 @@ jobs:
           at: .
       - run:
           name: Install required dependencies
-          command: apk add tar gzip curl
+          command: apk add tar unzip curl
       - run:
           name: Install dependencies
           command: |
