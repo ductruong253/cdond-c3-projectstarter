@@ -175,15 +175,15 @@ jobs:
           at: .
       - run:
           name: Install required dependencies
-          command: apk add tar unzip curl
+          command: |
+            apk add tar unzip curl
+            apk add --no-cache aws-cli
+            aws --version
       - run:
           name: Install dependencies
           command: |
             apk add --update ansible
             ansible --version
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            ./awscliv2/install
       - run:
           name: Configure server
           command: |
