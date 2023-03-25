@@ -183,11 +183,11 @@ jobs:
             ansible --version
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
-            ./aws/install
+            ./awscliv2/install
       - run:
           name: Configure server
           command: |
-            cd ./.circleci/ansible
+            cd ./.circleci/ansible/
             ansible-playbook -i inventory configure-server.yml
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
