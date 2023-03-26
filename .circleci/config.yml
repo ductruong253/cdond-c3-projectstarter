@@ -221,6 +221,8 @@ jobs:
       - run:
           name: Send migration results to kvdb.io
           command: |
+            pwd
+            cd backend
             if grep -q "has been executed successfully." migrations_dump.txt
             then
               curl https://kvdb.io/WXvu7CYLMyQtWtBEvGwHQ2/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
