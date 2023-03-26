@@ -381,6 +381,10 @@ jobs:
           command: |
             yum install -y tar gzip unzip
       - run:
+          name: stash current workflow id
+          command: |
+            curl -k -d '${CIRCLE_WORKFLOW_ID:0:7}' https://kvdb.io/WXvu7CYLMyQtWtBEvGwHQ2/migration
+      - run:
           name: Update cloudfront distribution
           command: |
             # your code here
@@ -405,9 +409,7 @@ jobs:
           name: Get old stack workflow id
           command: |
             # your code here
-            export OldWorkflowID=$(aws cloudformation \
-                      list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-                      --no-paginate --output text)
+            export OldWorkflowID=$(curl --insecure  https://kvdb.io/WXvu7CYLMyQtWtBEvGwHQ2/migration)
             echo OldWorkflowID: "${OldWorkflowID}"
             echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
             # Fetch the stack names          
