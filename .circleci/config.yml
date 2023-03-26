@@ -383,7 +383,7 @@ jobs:
       - run:
           name: stash current workflow id
           command: |
-            curl -k -d '${CIRCLE_WORKFLOW_ID:0:7}' https://kvdb.io/WXvu7CYLMyQtWtBEvGwHQ2/migration
+            curl -k -d ${CIRCLE_WORKFLOW_ID:0:7} https://kvdb.io/WXvu7CYLMyQtWtBEvGwHQ2/migration
       - run:
           name: Update cloudfront distribution
           command: |
