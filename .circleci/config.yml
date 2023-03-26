@@ -405,7 +405,7 @@ jobs:
       - image: amazon/aws-cli
     steps:
       # Checkout code from git
-      - chechout
+      - checkout
       - run:
           name: Remove old stacks and files
           command: |
