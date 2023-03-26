@@ -1,3 +1,5 @@
-URL01: https://github.com/mithie/udacity-cloud-devops-engineer-project-3/blob/master/.circleci/config.yml
+URL01: A public git repository with your project code
+https://github.com/ductruong253/cdond-c3-projectstarter
 
-URL02: http://udapeople-82020fe.s3-website-us-east-1.amazonaws.com 
+URL02: Evidence of deployed and functioning front-end application in an S3 bucket [URL02]
+http://udapeople-902be5d.s3-website-us-east-1.amazonaws.com/
