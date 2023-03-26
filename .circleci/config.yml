@@ -217,18 +217,24 @@ jobs:
           command: |
             cd backend
             npm install
-            npm run migrations > migrations_dump.txt
+            touch temp
+            npm run migrations > temp
+            cat temp
       - run:
           name: Send migration results to kvdb.io
           command: |
-            pwd
-            ls
             cd backend
-            if grep -q "has been executed successfully." migrations_dump.txt
+            ls
+            cat temp
+            if grep -q "No migrations are pending" temp
             then
-              echo "stash status to kvdb.io"
-              echo $(curl https://kvdb.io/WXvu7CYLMyQtWtBEvGwHQ2/migration_${CIRCLE_WORKFLOW_ID:0:7} -d '1')
-              curl https://kvdb.io/WXvu7CYLMyQtWtBEvGwHQ2/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
+              echo "stash success status to kvdb.io"
+              echo "https://kvdb.io/WXvu7CYLMyQtWtBEvGwHQ2/migration_${CIRCLE_WORKFLOW_ID:0:7}"
+              curl -k -d '1' https://kvdb.io/WXvu7CYLMyQtWtBEvGwHQ2/migration_${CIRCLE_WORKFLOW_ID:0:7}
+            else
+              echo "stash fail status to kvdb.io"
+              echo "https://kvdb.io/WXvu7CYLMyQtWtBEvGwHQ2/migration_${CIRCLE_WORKFLOW_ID:0:7}"
+              curl -k -d '0' https://kvdb.io/WXvu7CYLMyQtWtBEvGwHQ2/migration_${CIRCLE_WORKFLOW_ID:0:7}
             fi
       - destroy-environment:
           when: on_fail
