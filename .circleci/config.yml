@@ -28,13 +28,13 @@ commands:
           # Add when this will run
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS=$(curl -H "token: 2a9e15d6-b9fa-4b1f-a5dc-e3b9643a9b63" --request GET https://api.memstash.io/values/DB_MIGRATION_<< parameters.id >>)
-            echo SUCCESS
-            if [[ "$SUCCESS" == "success" ]]
+            export SUCCESS=$(curl --insecure  https://kvdb.io/WXvu7CYLMyQtWtBEvGwHQ2/migration_<< parameters.id >>)
+            echo $SUCCESS
+            if (( $SUCCESS == 1 ));
             then
-              pwd
-              ls -la
-              npm run migrations:revert
+              cd ./backend
+              npm install
+              npm run migration:revert
             fi
           when: << parameters.when >>
 
@@ -219,7 +219,7 @@ jobs:
             npm install
             npm run migrations > migrations_dump.txt
       - run:
-          name: Send migration results to memstash
+          name: Send migration results to kvdb.io
           command: |
             if grep -q "has been executed successfully." migrations_dump.txt
             then
@@ -304,9 +304,9 @@ jobs:
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
           when: on_fail
-      # - revert-migrations:
-      #     id: ${CIRCLE_WORKFLOW_ID:0:7}
-      #     when: on_fail
+      - revert-migrations:
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          when: on_fail
 
   smoke-test:
     docker:
@@ -352,6 +352,11 @@ jobs:
             else
               return 1
             fi
+      - destroy-environment:
+          when: on_fail
+      - revert-migrations:
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          when: on_fail
 
 #   cloudfront-update:
 #     docker:
