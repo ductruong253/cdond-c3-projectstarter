@@ -397,7 +397,7 @@ jobs:
               list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
               --no-paginate --output text)
             OldWorkflowID=${OldWorkflowIDstack:10:7}
-            echo ${OldWorkflowID}
+            echo ${OldWorkflowID} > oldId
             aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
               --stack-name InitialStack \
@@ -405,6 +405,10 @@ jobs:
               --tags project=udapeople
             echo OldWorkflowID: ${OldWorkflowID}
             echo Current work flow ID: ${CIRCLE_WORKFLOW_ID:0:7}
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./oldId
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
           when: on_fail
@@ -427,12 +431,10 @@ jobs:
       - run:
           name: Remove old stacks and files
           command: |
+            echo ${OldWorkflowID}
             if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
             then
               echo "Delete confirmed"
-              export OldWorkflowID=$(aws cloudformation \
-                list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-                --no-paginate --output text)
               aws s3 rm "s3://${OldWorkflowID}" --recursive
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
@@ -461,36 +463,15 @@ workflows:
               only: [master]
       - configure-infrastructure:
           requires: [deploy-infrastructure]
-          filters:
-            branches:
-              only: [master]
       - run-migrations:
           requires: [configure-infrastructure]
-          filters:
-            branches:
-              only: [master]
       - deploy-frontend:
           requires: [run-migrations]
-          filters:
-            branches:
-              only: [master]
       - deploy-backend:
           requires: [run-migrations]
-          filters:
-            branches:
-              only: [master]
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
-          filters:
-            branches:
-              only: [master]
       - cloudfront-update:
           requires: [smoke-test]
-          filters:
-            branches:
-              only: [master]
       - cleanup:
           requires: [cloudfront-update]
-          filters:
-            branches:
-              only: [master]
