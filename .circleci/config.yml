@@ -8,10 +8,11 @@ commands:
         type: string
     steps:
       - run:
-          name: Destroy environments
+          name: Clear S3 and destroy environment
           when: << parameters.when >>
           command: |
             aws s3 rm "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --recursive
+            aws s3 rb s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}
             aws cloudformation delete-stack --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
             aws cloudformation delete-stack --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
             echo "done cleanup"
@@ -378,12 +379,12 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
-      - attach_workspace:
-          at: .
       - run:
           name: Install dependencies
           command: |
             yum install -y tar gzip unzip
+      - attach_workspace:
+          at: .
       - run:
           name: stash current workflow id
           command: |
@@ -417,6 +418,10 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            yum install -y tar gzip unzip
       - attach_workspace:
           at: .
       - run:
