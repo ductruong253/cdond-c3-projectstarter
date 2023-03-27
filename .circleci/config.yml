@@ -34,7 +34,8 @@ commands:
             echo $SUCCESS
             if (( $SUCCESS == 1 ));
             then
-              cd ./backend
+              pwd
+              cd ~/project/backend
               npm install
               npm run migration:revert
             fi
